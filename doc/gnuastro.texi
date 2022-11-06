@@ -24649,6 +24649,17 @@ A tile that is on the wing of a bright galaxy/star will clearly be an outlier wh
 For more on the details of the outlier rejection algorithm, see the latter half of @ref{Quantifying signal in a tile}.
 If this option is given a value of zero, no outlier rejection will take place.
 
+@item -a INT
+@itemx --outliernumngb=INT
+Number of neighboring tiles to use for outlier rejection (mostly the wings of bright stars or galaxies).
+For optimal detection of the wings of bright stars or galaxies, this is @strong{the most important} option in NoiseChisel.
+This is because the extended wings of bright galaxies or stars (the PSF) can become flat over the tile.
+In this case, they will satisfy the @option{--meanmedqdiff} condition and pass that step.
+Therefore, to correctly identify such bad tiles, we need to look at the neighboring nearby tiles.
+A tile that is on the wing of a bright galaxy/star will clearly be an outlier when looking at the neighbors.
+For more on the details of the outlier rejection algorithm, see the latter half of @ref{Quantifying signal in a tile}.
+If this option is given a value of zero, no outlier rejection will take place.
+
 @item --outliersclip=FLT,FLT
 @mymath{\sigma}-clipping parameters for the outlier rejection of the quantile threshold.
 The format of the given values is similar to @option{--sigmaclip} below.
