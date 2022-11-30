@@ -6,6 +6,7 @@ Original author:
      Jash Shah <jash28582@gmail.com>
 Contributing author(s):
      Mohammad Akhlaghi <mohammad@akhlaghi.org>
+     Pedram Ashofteh-Ardakani <pedramardakani@pm.me>
 Copyright (C) 2022 Free Software Foundation, Inc.
 
 Gnuastro is free software: you can redistribute it and/or modify it
@@ -23,11 +24,15 @@ along with Gnuastro. If not, see <http://www.gnu.org/licenses/>.
 **********************************************************************/
 #include <config.h>
 
+#include <gnuastro/error.h>
+#include <gnuastro-internal/checkset.h>
+
 #include <error.h>
 
-#include <gnuastro/error.h>
 
-#include <gnuastro-internal/checkset.h>
+
+
+
 
 
 
@@ -261,4 +266,19 @@ gal_error_check(gal_error_t **err, uint32_t macro_val)
   }
 
   return 0;
+}
+
+
+
+void
+gal_error(gal_error_t **err, int error_code, char *format, ...)
+{
+  va_list args;
+  char *errstr=NULL;
+  va_start (args, format);
+  if(vsprintf(errstr, format, args) >= 0)
+    gal_error_add_back_msg(err, errstr, error_code);
+  else
+    gal_checkset_malloc_cat((char *)__func__, ": can not use 'asprintf'" );
+  va_end (args);
 }

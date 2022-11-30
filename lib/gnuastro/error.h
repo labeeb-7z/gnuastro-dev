@@ -6,6 +6,7 @@ Original author:
      Jash Shah <jash28582@gmail.com>
 Contributing author(s):
      Mohammad Akhlaghi <mohammad@akhlaghi.org>
+     Pedram Ashofteh-Ardakani <pedramardakani@pm.me>
 Copyright (C) 2022 Free Software Foundation, Inc.
 
 Gnuastro is free software: you can redistribute it and/or modify it
@@ -27,7 +28,7 @@ along with Gnuastro. If not, see <http://www.gnu.org/licenses/>.
 /* Include other headers if necessary here. Note that other header files
    must be included before the C++ preparations below */
 #include <stdint.h>
-
+#include <stdarg.h>
 
 
 /* C++ Preparations */
@@ -163,10 +164,12 @@ void
 gal_error_add_front_msg(gal_error_t **err, char *front_msg,
                         uint8_t replace);
 
+void
+gal_error(gal_error_t **err, int error_code, char *format, ...);
 
 
 /****************************************************************
- ************************   Priting   ************************
+ *************************   Priting   **************************
  ****************************************************************/
 int
 gal_error_print(gal_error_t *err);
@@ -177,7 +180,7 @@ gal_error_reverse(gal_error_t **err);
 
 
 /****************************************************************
- ************************   Checking   ************************
+ *************************   Checking   *************************
  ****************************************************************/
 uint8_t
 gal_error_check(gal_error_t **err, uint32_t macro_val);
@@ -188,9 +191,6 @@ gal_error_parse_macro(uint32_t macro_val, uint8_t *lib_code, uint8_t *code,
 
 uint8_t
 gal_error_occurred(gal_error_t *err);
-
-
-
 
 __END_C_DECLS    /* From C++ preparations */
 
