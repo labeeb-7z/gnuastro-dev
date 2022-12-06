@@ -270,6 +270,8 @@ gal_error_check(gal_error_t **err, uint32_t macro_val)
 
 
 
+
+
 void
 gal_error(gal_error_t **err, int lib_code, int error_code,
           int is_warning, char *format, ...)
@@ -282,14 +284,15 @@ gal_error(gal_error_t **err, int lib_code, int error_code,
   va_start(args, format);
 
   /* Allocate the error string and put it in the pointer. */
-  if(vasprintf(&errstr, format, args) >= 0)
-    gal_error_add_back_msg(err, errstr, code);
-  else
-    gal_checkset_malloc_cat((char *)__func__,
-                            ": can not use 'vasprintf'" );
+  if(vasprintf(&errstr, format, args)<0)
+    errstr=gal_checkset_malloc_cat((char *)__func__,
+                                   ": can not use 'vasprintf'" );
+
+  /* Put the error string in the error structure. */
+  gal_error_add_back_msg(err, errstr, code);
 
   /* Close the variable argument list. */
-  va_end (args);
+  va_end(args);
 }
 
 

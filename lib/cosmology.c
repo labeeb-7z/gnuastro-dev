@@ -79,13 +79,13 @@ struct cosmology_integrand_t
 /*********************************************************************/
 static void
 cosmology_error(gal_error_t **err, int error_code,
-                    int is_warning, char *format, ...)
+                int is_warning, char *format, ...)
 {
   va_list args;
   va_start(args, format);
   gal_error(err, GAL_ERROR_LIB_COSMOLOGY, error_code,
             is_warning, format, args);
-  va_end (args);
+  va_end(args);
 }
 
 

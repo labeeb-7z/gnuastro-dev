@@ -93,7 +93,7 @@ struct argp_option program_options[] =
       GAL_OPTIONS_GROUP_INPUT,
       &p->olambda,
       GAL_TYPE_FLOAT64,
-      GAL_OPTIONS_RANGE_GE_0_LE_1,
+      GAL_OPTIONS_RANGE_GE_0,
       GAL_OPTIONS_MANDATORY,
       GAL_OPTIONS_NOT_SET
     },

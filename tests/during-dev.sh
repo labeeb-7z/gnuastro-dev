@@ -87,10 +87,9 @@ outdir=
 # the script, you have to add a line under the line below
 #    'if [ -f "$utility" ]; then rm "$utility"; fi'
 # that will delete that particular program.
-utilname=
+utilname=cosmiccal
 arguments=
-options=
-
+options="-z2 --age --olambda=10"
 
 
 

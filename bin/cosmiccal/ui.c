@@ -406,13 +406,14 @@ ui_read_check_only_options(struct cosmiccalparams *p)
   double sum = p->olambda + p->omatter + p->oradiation;
 
   /* Check if the density fractions add up to 1 (within floating point
-     error). */
+     error).
   if( sum > (1+1e-8) || sum < (1-1e-8) )
     error(EXIT_FAILURE, 0, "sum of fractional densities is not 1, but "
           "%.8f. The cosmological constant ('olambda'), matter "
           "('omatter') and radiation ('oradiation') densities are given "
           "as %.8f, %.8f, %.8f", sum, p->olambda, p->omatter,
           p->oradiation);
+  */
 
   /* Make sure that '--listlines' and '--listlinesatz' aren't called
      together. */

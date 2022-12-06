@@ -30,6 +30,8 @@ along with Gnuastro. If not, see <http://www.gnu.org/licenses/>.
 
 #include <gnuastro/cosmology.h>
 
+#include <gnuastro-internal/error-internal.h>
+
 #include "main.h"
 
 #include "ui.h"
@@ -110,13 +112,14 @@ cosmiccal_printall(struct cosmiccalparams *p)
   vz=gal_cosmology_comoving_volume(p->redshift, p->H0, p->olambda, p->omatter,
                                    p->oradiation, &err);
 
-  /* Incase an error passed through the ui sanity checks. */
+  /* Incase an error passed through the ui sanity checks.
   if(gal_error_occurred(err))
     error(EXIT_FAILURE, 0, "%s: a bug! Please contact us at %s to "
           "fix the problem. The values provided for the "
           "cosmological constants (%f, %f, %f) don't satisfy "
           "their constraints.", __func__, PACKAGE_BUGREPORT,
           p->olambda, p->omatter, p->oradiation);
+  */
 
   /* Print out results: */
   cosmiccal_print_input(p);
@@ -300,12 +303,14 @@ cosmiccal(struct cosmiccalparams *p)
 
           /* Incase an error passed through the ui sanity checks. */
           if(gal_error_occurred(err))
+            errorـinternal_check_abort(err);
+          /*
             error(EXIT_FAILURE, 0, "%s: a bug! Please contact us at %s to "
                   "fix the problem. The values provided for the "
                   "cosmological constants (%f, %f, %f) don't satisfy "
                   "their constraints.", __func__, PACKAGE_BUGREPORT,
                   p->olambda, p->omatter, p->oradiation);
-
+          */
           /* Only add a space-character if there are more results to print. */
           if(tmp->next) printf(" ");
         }
