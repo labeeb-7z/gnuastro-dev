@@ -651,7 +651,6 @@ ui_read_check_inputs_setup(int argc, char *argv[], struct cosmiccalparams *p)
   if(argp_parse(&thisargp, argc, argv, 0, 0, p))
     error(EXIT_FAILURE, errno, "parsing arguments");
 
-
   /* Read the configuration files and set the common values. */
   gal_options_read_config_set(&p->cp);
 

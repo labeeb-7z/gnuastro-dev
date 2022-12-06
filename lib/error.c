@@ -58,12 +58,12 @@ gal_error_print(gal_error_t *err)
   for(tmperr = err; tmperr!=NULL; tmperr = tmperr->next)
     {
       /* If an error is found which is NOT a warning. */
-      if(!tmperr->is_warning) 
+      if(!tmperr->is_warning)
       {
         count_err++;
         errsuffix=" [BREAKING]";
       }
-       
+
       if(tmperr->front_msg)
         error(EXIT_SUCCESS, 0,
               "%s: %d: %d: %s%s",tmperr->front_msg, tmperr->lib_code,
@@ -103,7 +103,7 @@ gal_error_allocate(uint8_t lib_code, uint8_t code, char *back_msg,
 {
   gal_error_t *outerr;
 
-  /* Allocate the space for the structure. 
+  /* Allocate the space for the structure.
      We use calloc here so that the error code and is_warning flags
      are set to 0 indicating generic error type and a breaking error
      by default. */
@@ -111,7 +111,7 @@ gal_error_allocate(uint8_t lib_code, uint8_t code, char *back_msg,
   if(outerr == NULL)
     error(EXIT_FAILURE, 0, "%s: %zu bytes for gal_error_t,",
           __func__, sizeof *outerr);
-  
+
   /* Initialize the allocated error data */
   outerr->lib_code = lib_code;
   outerr->code = code;
@@ -145,7 +145,7 @@ gal_error_add_back_msg(gal_error_t **err, char *back_msg,
   /* Allocate a new error to be added at the top of the error stack. */
   gal_error_t *newerr;
   newerr = gal_error_allocate(lib_code, code, back_msg, is_warning);
-  
+
   /* Push the new error to the top of the stack. */
   newerr->next = *err;
   *err = newerr;
@@ -163,9 +163,9 @@ gal_error_add_front_msg(gal_error_t **err, char *front_msg,
                         uint8_t replace)
 {
   /* Don't do anything if error structure is empty or no message provided. */
-  if (!*err || front_msg==NULL) 
+  if (!*err || front_msg==NULL)
        return;
-     
+
   /* Only allocate if an error already exists. */
   if ((*err)->front_msg && !replace)
     error(EXIT_FAILURE, 0, "%s: A frontend error message already exists "
@@ -229,7 +229,7 @@ gal_error_parse_macro(uint32_t macro_val, uint8_t *lib_code, uint8_t *code,
      from the LSB) 8 bits denote the `is_warning` flag status. Since the
      status is either 0 or 1, if the macro value is odd then `is_warning`
      flag is true.
-     
+
       00000000 00000000 00000000 00000000
               |      | |      | |      |
               -------  -------  -------
@@ -271,14 +271,45 @@ gal_error_check(gal_error_t **err, uint32_t macro_val)
 
 
 void
-gal_error(gal_error_t **err, int error_code, char *format, ...)
+gal_error(gal_error_t **err, int lib_code, int error_code,
+          int is_warning, char *format, ...)
 {
   va_list args;
   char *errstr=NULL;
-  va_start (args, format);
-  if(vsprintf(errstr, format, args) >= 0)
-    gal_error_add_back_msg(err, errstr, error_code);
+  uint32_t code=GAL_ERROR_BITSET(lib_code, error_code, is_warning);
+
+  /* Put '...' in 'args', and give it to  */
+  va_start(args, format);
+
+  /* Allocate the error string and put it in the pointer. */
+  if(vasprintf(&errstr, format, args) >= 0)
+    gal_error_add_back_msg(err, errstr, code);
   else
-    gal_checkset_malloc_cat((char *)__func__, ": can not use 'asprintf'" );
+    gal_checkset_malloc_cat((char *)__func__,
+                            ": can not use 'vasprintf'" );
+
+  /* Close the variable argument list. */
   va_end (args);
+}
+
+
+
+
+
+/* Function to call at the start of library functions. This will check the
+   '*err' pointer and if NULL, it will add a standard string saying that
+   the function was not executed. */
+int
+gal_error_func_reject(gal_error_t **err, int lib_code,
+                      int error_code, int is_warning,
+                      const char *func)
+{
+  if(*err)
+    {
+      gal_error(err, lib_code, error_code, is_warning,
+                "%s: error point is not empty, will not "
+                "continue", func);
+      return 1;
+    }
+  else return 0;
 }

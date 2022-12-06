@@ -26,6 +26,7 @@ along with Gnuastro. If not, see <http://www.gnu.org/licenses/>.
 /* Include other headers if necessary here. Note that other header files
    must be included before the C++ preparations below */
 #include <gnuastro/data.h>
+#include <gnuastro/error.h>
 
 
 /* C++ Preparations */
@@ -51,12 +52,22 @@ __BEGIN_C_DECLS  /* From C++ preparations */
 
 
 
+/* Error codes for this library. */
+enum gal_array_error
+{
+  GAL_ARRAY_ERROR_INVALID,      /* =0 by default. */
+  GAL_ARRAY_ERROR_BUG,          /* Unknown situation. */
+};
+
+
+
+
 /* Functions */
 int
-gal_array_name_recognized(char *name);
+gal_array_name_recognized(char *name, gal_error_t **err);
 
 int
-gal_array_name_recognized_multiext(char *name);
+gal_array_name_recognized_multiext(char *name, gal_error_t **err);
 
 int
 gal_array_file_recognized(char *name);

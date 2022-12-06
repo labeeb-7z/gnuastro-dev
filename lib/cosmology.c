@@ -74,6 +74,40 @@ struct cosmology_integrand_t
 
 
 
+/*********************************************************************/
+/*****************        Error for this library      ****************/
+/*********************************************************************/
+static void
+cosmology_error(gal_error_t **err, int error_code,
+                    int is_warning, char *format, ...)
+{
+  va_list args;
+  va_start(args, format);
+  gal_error(err, GAL_ERROR_LIB_COSMOLOGY, error_code,
+            is_warning, format, args);
+  va_end (args);
+}
+
+
+
+
+
+static int
+cosmology_reject(gal_error_t **err, const char *func)
+{
+  return gal_error_func_reject(err, GAL_ERROR_LIB_COSMOLOGY,
+                               GAL_COSMOLOGY_ERROR_REJECTED, 0, func);
+}
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -85,7 +119,7 @@ struct cosmology_integrand_t
 
 
 /**************************************************************/
-/************     Constraint Check Function      *************/
+/************      Constraint Check Function      *************/
 /**************************************************************/
 /* Check if input parameters are witihin the required constraints.
     i.e All density fractions should be between 0 and 1 AND their
@@ -98,35 +132,39 @@ cosmology_density_check(double o_lambda_0, double o_matter_0,
 
   /* Check if the density fractions are between 0 and 1. */
   if(o_lambda_0 > 1 || o_lambda_0 < 0)
-    gal_error(err, GAL_COSMOLOGY_ERROR_LAMBDA_OUT_OF_BOUNDS,
-              "%s: value to option 'olambda' must be between zero "
-              "and one (inclusive), but the given value is '%.8f'. "
-              "Recall that 'olambda' is 'Current cosmological "
-              "cst. dens. per crit. dens'.", __func__, o_lambda_0);
+    cosmology_error(err, GAL_COSMOLOGY_ERROR_LAMBDA_OUT_OF_BOUNDS,
+                    0, "%s: value to option 'olambda' must be between "
+                    "zero and one (inclusive), but the given value "
+                    "is '%.8f'. Recall that 'olambda' is the current "
+                    "cosmological constant density per critical "
+                    "density", __func__, o_lambda_0);
 
   if(o_matter_0 > 1 || o_matter_0 < 0)
-    gal_error(err, GAL_COSMOLOGY_ERROR_MATTER_OUT_OF_BOUNDS,
-              "%s: value to option 'omatter' must be between "
-              "zero and one (inclusive), but the given value is '%.8f'. "
-              "Recall that 'omatter' is 'Current matter density per "
-              "critical density.'", __func__, o_matter_0);
+    cosmology_error(err, GAL_COSMOLOGY_ERROR_MATTER_OUT_OF_BOUNDS,
+                    0, "%s: value to option 'omatter' must be "
+                    "between zero and one (inclusive), but the "
+                    "given value is '%.8f'. Recall that 'omatter' "
+                    "is 'Current matter density per critical "
+                    "density.'", __func__, o_matter_0);
 
   if(o_radiation_0 > 1 || o_radiation_0 < 0)
-    gal_error(err, GAL_COSMOLOGY_ERROR_RADIATION_OUT_OF_BOUNDS,
-              "%s: value to option 'oradiation' must be between "
-              "zero and one (inclusive), but the given value is '%.8f'. "
-              "Recall that 'oradiation' is 'Current radiation density "
-              "per critical density.", __func__, o_radiation_0);
+    cosmology_error(err, GAL_COSMOLOGY_ERROR_RADIATION_OUT_OF_BOUNDS,
+                    0, "%s: value to option 'oradiation' must be "
+                    "between zero and one (inclusive), but the given "
+                    "value is '%.8f'. Recall that 'oradiation' is "
+                    "'Current radiation density per critical density.",
+                    __func__, o_radiation_0);
 
   /* Check if the density fractions add up to 1 (within floating point
-      error). */
+     error). */
   if( sum > (1+1e-8) || sum < (1-1e-8) )
-    gal_error(err, GAL_COSMOLOGY_ERROR_SUM_LIMIT,
-              "%s: sum of fractional densities is not 1, "
-              "but %.8f. The cosmological constant ('olambda'), matter "
-              "('omatter') and radiation ('oradiation') densities are "
-              "given as %.8f, %.8f, %.8f.", __func__, sum,
-              o_lambda_0, o_matter_0, o_radiation_0);
+    cosmology_error(err, GAL_COSMOLOGY_ERROR_SUM_LIMIT, 0,
+                    "%s: sum of fractional densities is not 1, "
+                    "but %.8f. The cosmological constant "
+                    "('olambda'), matter ('omatter') and radiation "
+                    "('oradiation') densities are given as %.8f, "
+                    "%.8f, %.8f.", __func__, sum, o_lambda_0,
+                    o_matter_0, o_radiation_0);
 }
 
 
@@ -232,17 +270,22 @@ gal_cosmology_age(double z, double H0, double o_lambda_0,
                   double o_matter_0, double o_radiation_0,
                   gal_error_t **err)
 {
-  cosmology_density_check(o_lambda_0, o_matter_0, o_radiation_0, err);
   gsl_function F;
   double result, error;
+  gsl_integration_workspace *w;
   double o_curv_0 = 1.0 - ( o_lambda_0 + o_matter_0 + o_radiation_0 );
   double H0s=H0/1000/GSL_CONST_MKSA_PARSEC;  /* H0 in units of seconds. */
-  gsl_integration_workspace *w=gsl_integration_workspace_alloc(GSLILIMIT);
   struct cosmology_integrand_t p={o_lambda_0, o_curv_0, o_matter_0,
                                   o_radiation_0};
 
+  /* Sanity check. */
+  if(cosmology_reject(err, __func__)) return NAN;
+  cosmology_density_check(o_lambda_0, o_matter_0, o_radiation_0, err);
+  if(*err) return NAN;
+
   /* Set the GSL function parameters. */
   F.params=&p;
+  w=gsl_integration_workspace_alloc(GSLILIMIT);
   F.function=&cosmology_integrand_age;
   gsl_integration_qagiu(&F, z, GSLIEPSABS, GSLIEPSREL, GSLILIMIT, w,
                         &result, &error);

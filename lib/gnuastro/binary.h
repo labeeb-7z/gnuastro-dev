@@ -27,6 +27,7 @@ along with Gnuastro. If not, see <http://www.gnu.org/licenses/>.
    must be included before the C++ preparations below */
 #include <gnuastro/data.h>
 #include <gnuastro/blank.h>
+#include <gnuastro/error.h>
 
 /* C++ Preparations */
 #undef __BEGIN_C_DECLS

@@ -23,10 +23,12 @@ along with Gnuastro. If not, see <http://www.gnu.org/licenses/>.
 #ifndef __GAL_GIT_H__
 #define __GAL_GIT_H__
 
-
+/* Include other headers if necessary here. Note that other header files
+   must be included before the C++ preparations below */
 #if GAL_CONFIG_HAVE_LIBGIT2 == 1
 #include <git2.h>
 #endif
+#include <gnuastro/error.h>
 
 /* C++ Preparations */
 #undef __BEGIN_C_DECLS

@@ -23,9 +23,11 @@ along with Gnuastro. If not, see <http://www.gnu.org/licenses/>.
 #ifndef __GAL_TYPE_H__
 #define __GAL_TYPE_H__
 
+/* Include other headers if necessary here. Note that other header files
+   must be included before the C++ preparations below. */
 #include <limits.h>
 #include <stdint.h>
-
+#include <gnuastro/error.h>
 #include <gsl/gsl_complex.h>
 
 /* When we are within Gnuastro's building process, 'IN_GNUASTRO_BUILD' is

@@ -220,9 +220,9 @@ EXTRA_DIST = gnuastro.pc.in \
   $(internaldir)/arithmetic-bitrsh.h \
   $(internaldir)/arithmetic-bitxor.h \
   $(internaldir)/arithmetic-divide.h \
-  $(internaldir)/arithmetic-eq.h  \
+  $(internaldir)/arithmetic-eq.h \
   $(internaldir)/arithmetic-ge.h \
-  $(internaldir)/arithmetic-gt.h  \
+  $(internaldir)/arithmetic-gt.h \
   $(internaldir)/arithmetic-internal.h \
   $(internaldir)/arithmetic-le.h  \
   $(internaldir)/arithmetic-lt.h \
@@ -232,15 +232,16 @@ EXTRA_DIST = gnuastro.pc.in \
   $(internaldir)/arithmetic-ne.h \
   $(internaldir)/arithmetic-or.h  \
   $(internaldir)/arithmetic-plus.h \
-  $(internaldir)/arithmetic-set.h  \
+  $(internaldir)/arithmetic-set.h \
   $(internaldir)/checkset.h \
-  $(internaldir)/commonopts.h  \
+  $(internaldir)/commonopts.h \
   $(internaldir)/config.h.in \
-  $(internaldir)/fixedstringmacros.h  \
+  $(internaldir)/error-internal.h \
+  $(internaldir)/fixedstringmacros.h \
   $(internaldir)/options.h \
   $(internaldir)/tableintern.h  \
   $(internaldir)/tile-internal.h \
-  $(internaldir)/timing.h  \
+  $(internaldir)/timing.h \
   $(internaldir)/wcsdistortion.h
 
 

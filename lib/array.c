@@ -31,9 +31,25 @@ along with Gnuastro. If not, see <http://www.gnu.org/licenses/>.
 #include <gnuastro/fits.h>
 #include <gnuastro/jpeg.h>
 #include <gnuastro/tiff.h>
+#include <gnuastro/error.h>
 #include <gnuastro/array.h>
 
 
+
+
+/*********************************************************************/
+/*****************        Error for this library      ****************/
+/*********************************************************************/
+static void
+gal_array_error(gal_error_t **err, int error_code,
+                int is_warning, char *format, ...)
+{
+  va_list args;
+  va_start(args, format);
+  gal_error(err, GAL_ERROR_LIB_ARRAY, error_code,
+            is_warning, format, args);
+  va_end (args);
+}
 
 
 
@@ -46,17 +62,18 @@ along with Gnuastro. If not, see <http://www.gnu.org/licenses/>.
 /*****************        High-level functions        ****************/
 /*********************************************************************/
 int
-gal_array_name_recognized(char *name)
+gal_array_name_recognized(char *name, gal_error_t **err)
 {
-  if( gal_array_name_recognized_multiext(name) ) return 1;
-  else if ( gal_jpeg_name_is_jpeg(name)        ) return 1;
-  else                                           return 0;
+  if( gal_array_name_recognized_multiext(name, err) ) return 1;
+  else if ( gal_jpeg_name_is_jpeg(name)             ) return 1;
+  else                                                return 0;
 
   /* Control should not get to here, but just to avoid compiler warnings,
      we'll return a NULL. */
-  error(EXIT_FAILURE, 0, "%s: a bug! Please contact us at %s to solve the "
-        "problem. Control must not reach the end of this function", __func__,
-        PACKAGE_BUGREPORT);
+  gal_array_error(err, GAL_ARRAY_ERROR_BUG, 0, "%s: a bug! Please "
+                  "contact us at %s to solve the problem. Control "
+                  "must not reach the end of this function", __func__,
+                  PACKAGE_BUGREPORT);
   return 0;
 }
 
@@ -65,7 +82,7 @@ gal_array_name_recognized(char *name)
 
 
 int
-gal_array_name_recognized_multiext(char *name)
+gal_array_name_recognized_multiext(char *name, gal_error_t **err)
 {
   if(       gal_fits_name_is_fits(name) ) return 1;
   else if ( gal_tiff_name_is_tiff(name) ) return 1;
@@ -73,9 +90,10 @@ gal_array_name_recognized_multiext(char *name)
 
   /* Control should not get to here, but just to avoid compiler warnings,
      we'll return a NULL. */
-  error(EXIT_FAILURE, 0, "%s: a bug! Please contact us at %s to solve the "
-        "problem. Control must not reach the end of this function", __func__,
-        PACKAGE_BUGREPORT);
+  gal_array_error(err, GAL_ARRAY_ERROR_BUG, 0, "%s: a bug! Please "
+                  "contact us at %s to solve the problem. Control must "
+                  "not reach the end of this function", __func__,
+                  PACKAGE_BUGREPORT);
   return 0;
 }
 

@@ -41,6 +41,7 @@ along with Gnuastro. If not, see <http://www.gnu.org/licenses/>.
 #include <gnuastro-internal/timing.h>
 #include <gnuastro-internal/options.h>
 #include <gnuastro-internal/checkset.h>
+#include <gnuastro-internal/error-internal.h>
 #include <gnuastro-internal/fixedstringmacros.h>
 
 #include "main.h"
@@ -434,12 +435,14 @@ ui_read_column(struct convolveparams *p, int i0k1)
 static void
 ui_read_input(struct convolveparams *p)
 {
+  gal_error_t *err=NULL;
+
   /* To see if we should read it as a table. */
   p->input=NULL;
 
   /* If the input is a FITS image or any recognized array file format, then
      read it as an array, otherwise, as a table. */
-  if( p->filename && gal_array_name_recognized(p->filename) )
+  if( p->filename && gal_array_name_recognized(p->filename, &err) )
     if (p->isfits && p->hdu_type==IMAGE_HDU)
       {
         p->input=gal_array_read_one_ch_to_type(p->filename, p->cp.hdu, NULL,
@@ -453,6 +456,9 @@ ui_read_input(struct convolveparams *p)
                                                   p->input->dsize,
                                                   p->input->wcs);
       }
+
+  /* If an error occurred, abort the program. */
+  errorـinternal_check_abort(err);
 
   /* The input isn't an image (wasn't read yet), so we'll read it as a
      column. */
@@ -469,10 +475,12 @@ ui_read_input(struct convolveparams *p)
 static void
 ui_read_kernel(struct convolveparams *p)
 {
+  gal_error_t *err=NULL;
+
   /* Read the image into file. */
   if( p->kernelname
       && p->input->ndim>1
-      && gal_array_name_recognized(p->kernelname)  )
+      && gal_array_name_recognized(p->kernelname, &err)  )
     {
       p->kernel = gal_array_read_one_ch_to_type(p->kernelname, p->khdu,
                                                 NULL, INPUT_USE_TYPE,
@@ -484,6 +492,9 @@ ui_read_kernel(struct convolveparams *p)
     }
   else
     p->kernel=ui_read_column(p, 1);
+
+  /* If an error occurred abort the program. */
+  errorـinternal_check_abort(err);
 
   /* Make sure that the kernel and input have the same number of
      dimensions. */

@@ -29,7 +29,7 @@ along with Gnuastro. If not, see <http://www.gnu.org/licenses/>.
    must be included before the C++ preparations below */
 #include <stdint.h>
 #include <stdarg.h>
-
+#include <gnuastro/error.h>
 
 /* C++ Preparations */
 #undef __BEGIN_C_DECLS
@@ -60,13 +60,13 @@ __BEGIN_C_DECLS  /* From C++ preparations */
    significant 8 bits represent the library code(`lib_code`).
 
 
-                    ┌──────────────────┐
-                    │                  │
-                    │32 Bit Macro Value│
-                    │                  │
-                    └─────────┬────────┘
-                              │
-                              │
+                     ┌──────────────────┐
+                     │                  │
+                     │32 Bit Macro Value│
+                     │                  │
+                     └─────────┬────────┘
+                               │
+                               │
           ┌────────────────────┼───────────────────┐
           │                    │                   │
      Bits 16-25           Bits 8-15           Bits 0-7
@@ -77,7 +77,9 @@ __BEGIN_C_DECLS  /* From C++ preparations */
      │   0000 0000    │  │    0000 0000    │ │    0000 0000   │
      └────────────────┘  └─────────────────┘ └────────────────┘
 */
-#define ERROR_BITSET(lib_code, code, is_warning) ((lib_code << 16) | (code << 8) | is_warning)
+#define GAL_ERROR_BITSET(lib_code, code, is_warning) ((lib_code << 16) | (code << 8) | is_warning)
+
+
 
 
 
@@ -165,7 +167,27 @@ gal_error_add_front_msg(gal_error_t **err, char *front_msg,
                         uint8_t replace);
 
 void
-gal_error(gal_error_t **err, int error_code, char *format, ...);
+gal_error(gal_error_t **err, int lib_code, int error_code,
+          int is_warning, char *format, ...);
+
+
+/****************************************************************
+ *************************   Checking   *************************
+ ****************************************************************/
+uint8_t
+gal_error_check(gal_error_t **err, uint32_t macro_val);
+
+int
+gal_error_func_reject(gal_error_t **err, int lib_code,
+                      int error_code, int is_warning,
+                      const char *func);
+
+void
+gal_error_parse_macro(uint32_t macro_val, uint8_t *lib_code, uint8_t *code,
+                      uint8_t *is_warning);
+
+uint8_t
+gal_error_occurred(gal_error_t *err);
 
 
 /****************************************************************
@@ -177,20 +199,6 @@ gal_error_print(gal_error_t *err);
 void
 gal_error_reverse(gal_error_t **err);
 
-
-
-/****************************************************************
- *************************   Checking   *************************
- ****************************************************************/
-uint8_t
-gal_error_check(gal_error_t **err, uint32_t macro_val);
-
-void
-gal_error_parse_macro(uint32_t macro_val, uint8_t *lib_code, uint8_t *code,
-                      uint8_t *is_warning);
-
-uint8_t
-gal_error_occurred(gal_error_t *err);
 
 __END_C_DECLS    /* From C++ preparations */
 

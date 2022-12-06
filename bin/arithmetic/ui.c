@@ -39,6 +39,7 @@ along with Gnuastro. If not, see <http://www.gnu.org/licenses/>.
 #include <gnuastro-internal/timing.h>
 #include <gnuastro-internal/options.h>
 #include <gnuastro-internal/checkset.h>
+#include <gnuastro-internal/error-internal.h>
 #include <gnuastro-internal/fixedstringmacros.h>
 
 #include "main.h"
@@ -254,6 +255,7 @@ ui_read_check_only_options(struct arithmeticparams *p)
 static void
 ui_check_options_and_arguments(struct arithmeticparams *p)
 {
+  gal_error_t *err=NULL;
   gal_list_str_t *token, *hdu;
   char *filename, *basename=NULL;
   size_t nummultiext=0, numhdus=0;
@@ -308,7 +310,7 @@ ui_check_options_and_arguments(struct arithmeticparams *p)
           /* This token is a file, count how many mult-extension files we
              have and use the first to set the output filename (if it has
              not been set). */
-          if( gal_array_name_recognized(token->v)
+          if( gal_array_name_recognized(token->v, &err)
               || gal_fits_file_recognized(token->v) )
             {
               /* Increment the counter for FITS files (if they are
@@ -318,7 +320,7 @@ ui_check_options_and_arguments(struct arithmeticparams *p)
                  operator string. */
               if( strncmp(GAL_ARITHMETIC_OPSTR_LOADCOL_PREFIX, token->v,
                           GAL_ARITHMETIC_OPSTR_LOADCOL_PREFIX_LEN)
-                  && gal_array_name_recognized_multiext(token->v)  )
+                  && gal_array_name_recognized_multiext(token->v, &err)  )
                 ++nummultiext;
 
               /* If no output name is given, we need to extract the output
@@ -331,6 +333,9 @@ ui_check_options_and_arguments(struct arithmeticparams *p)
              before option parsing. */
           else if(token->v[0]==NEG_DASH_REPLACE && isdigit(token->v[1]) )
             token->v[0]='-';
+
+          /* If an error occurred, abort the program. */
+          errorـinternal_check_abort(err);
         }
     }
 

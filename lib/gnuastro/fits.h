@@ -47,6 +47,7 @@ along with Gnuastro. If not, see <http://www.gnu.org/licenses/>.
 
 #include <gnuastro/list.h>
 #include <gnuastro/data.h>
+#include <gnuastro/error.h>
 /* gnuastro/table.h is included below. */
 
 /* C++ Preparations */

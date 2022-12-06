@@ -48,15 +48,17 @@ __BEGIN_C_DECLS  /* From C++ preparations */
 
 
 
-/* Error codes. */
-/* olambda not between 0 and 1. */
-#define GAL_COSMOLOGY_ERROR_LAMBDA_OUT_OF_BOUNDS    ERROR_BITSET(GAL_ERROR_LIB_COSMOLOGY, 1, 0)
-/* omatter not between 0 and 1. */
-#define GAL_COSMOLOGY_ERROR_MATTER_OUT_OF_BOUNDS    ERROR_BITSET(GAL_ERROR_LIB_COSMOLOGY, 2, 0)
-/* oradiation not between 0 and 1. */
-#define GAL_COSMOLOGY_ERROR_RADIATION_OUT_OF_BOUNDS ERROR_BITSET(GAL_ERROR_LIB_COSMOLOGY, 3, 0)
-/* Sum of fractional densities not 1. */
-#define GAL_COSMOLOGY_ERROR_SUM_LIMIT               ERROR_BITSET(GAL_ERROR_LIB_COSMOLOGY, 4, 0)
+/* Error codes for this library. */
+enum gal_array_error
+{
+  GAL_COSMOLOGY_ERROR_INVALID,                  /* =0 by default. */
+  GAL_COSMOLOGY_ERROR_REJECTED,                 /* Unknown situation. */
+  GAL_COSMOLOGY_ERROR_BUG,                      /* Unknown situation. */
+  GAL_COSMOLOGY_ERROR_LAMBDA_OUT_OF_BOUNDS,     /* olambda not in 0 to 1. */
+  GAL_COSMOLOGY_ERROR_MATTER_OUT_OF_BOUNDS,     /* omatter not in 0 to 1. */
+  GAL_COSMOLOGY_ERROR_RADIATION_OUT_OF_BOUNDS,  /* oradiation not in 0 to 1. */
+  GAL_COSMOLOGY_ERROR_SUM_LIMIT,                /* sum of frac-density not 1. */
+};
 
 
 

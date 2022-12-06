@@ -27,6 +27,7 @@ along with Gnuastro. If not, see <http://www.gnu.org/licenses/>.
    must be included before the C++ preparations below */
 #include <gnuastro/data.h>
 #include <gnuastro/tile.h>
+#include <gnuastro/error.h>
 #include <gsl/gsl_spline.h>
 
 /* C++ Preparations */
