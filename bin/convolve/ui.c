@@ -37,11 +37,11 @@ along with Gnuastro. If not, see <http://www.gnu.org/licenses/>.
 #include <gnuastro/threads.h>
 #include <gnuastro/arithmetic.h>
 #include <gnuastro/statistics.h>
+#include <gnuastro/errorinprogram.h>
 
 #include <gnuastro-internal/timing.h>
 #include <gnuastro-internal/options.h>
 #include <gnuastro-internal/checkset.h>
-#include <gnuastro-internal/error-internal.h>
 #include <gnuastro-internal/fixedstringmacros.h>
 
 #include "main.h"
@@ -458,7 +458,7 @@ ui_read_input(struct convolveparams *p)
       }
 
   /* If an error occurred, abort the program. */
-  errorـinternal_check_abort(err);
+  gal_errorinprogram(err);
 
   /* The input isn't an image (wasn't read yet), so we'll read it as a
      column. */
@@ -494,7 +494,7 @@ ui_read_kernel(struct convolveparams *p)
     p->kernel=ui_read_column(p, 1);
 
   /* If an error occurred abort the program. */
-  errorـinternal_check_abort(err);
+  gal_errorinprogram(err);
 
   /* Make sure that the kernel and input have the same number of
      dimensions. */

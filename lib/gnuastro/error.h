@@ -104,47 +104,65 @@ typedef struct gal_error_t
 
 
 /************************************************************
- **************        Library Codes        ***************
+ **************        Library Codes          ***************
  ************************************************************/
-enum library_codes{
-     GAL_ERROR_LIB_INVALID,
-     GAL_ERROR_LIB_ARITHMETIC,
-     GAL_ERROR_LIB_ARRAY,
-     GAL_ERROR_LIB_BINARY,
-     GAL_ERROR_LIB_BLANK,
-     GAL_ERROR_LIB_BOX,
-     GAL_ERROR_LIB_COLOR,
-     GAL_ERROR_LIB_CONVOLVE,
-     GAL_ERROR_LIB_COSMOLOGY,
-     GAL_ERROR_LIB_DATA,
-     GAL_ERROR_LIB_DIMENSION,
-     GAL_ERROR_LIB_DS9,
-     GAL_ERROR_LIB_EPS,
-     GAL_ERROR_LIB_ERROR,
-     GAL_ERROR_LIB_FITS,
-     GAL_ERROR_LIB_GIT,
-     GAL_ERROR_LIB_INTERPOLATE,
-     GAL_ERROR_LIB_JPEG,
-     GAL_ERROR_LIB_KDTREE,
-     GAL_ERROR_LIB_LABEL,
-     GAL_ERROR_LIB_LIST,
-     GAL_ERROR_LIB_MATCH,
-     GAL_ERROR_LIB_PDF,
-     GAL_ERROR_LIB_PERMUTATION,
-     GAL_ERROR_LIB_POINTER,
-     GAL_ERROR_LIB_POLYGON,
-     GAL_ERROR_LIB_QSORT,
-     GAL_ERROR_LIB_SPECLINES,
-     GAL_ERROR_LIB_STATISTICS,
-     GAL_ERROR_LIB_TABLE,
-     GAL_ERROR_LIB_THREADS,
-     GAL_ERROR_LIB_TIFF,
-     GAL_ERROR_LIB_TILE,
-     GAL_ERROR_LIB_TXT,
-     GAL_ERROR_LIB_TYPE,
-     GAL_ERROR_LIB_UNITS,
-     GAL_ERROR_LIB_WCS,
-     GAL_ERROR_LIB_NUMBER
+/* To re-generate this list, run the following command:
+
+      $ cd lib/gnuastro
+      $ ls *.h \
+           | sed 's/\.h//' \
+           | awk '{printf "GAL_ERROR_LIB_%s,\n", toupper($1)}'
+
+   You can then simply copy-paste the output below (in the specified
+   region). */
+enum gal_error_library_codes{
+  GAL_ERROR_LIB_INVALID,     /* ==0: accoring to the C standard. */
+
+  /*-------------------- Output of command above --------------------*/
+  GAL_ERROR_LIB_ARITHMETIC,
+  GAL_ERROR_LIB_ARRAY,
+  GAL_ERROR_LIB_BINARY,
+  GAL_ERROR_LIB_BLANK,
+  GAL_ERROR_LIB_BOX,
+  GAL_ERROR_LIB_COLOR,
+  GAL_ERROR_LIB_CONVOLVE,
+  GAL_ERROR_LIB_COSMOLOGY,
+  GAL_ERROR_LIB_DATA,
+  GAL_ERROR_LIB_DIMENSION,
+  GAL_ERROR_LIB_DS9,
+  GAL_ERROR_LIB_EPS,
+  GAL_ERROR_LIB_ERROR,
+  GAL_ERROR_LIB_ERRORINPROGRAM,
+  GAL_ERROR_LIB_FIT,
+  GAL_ERROR_LIB_FITS,
+  GAL_ERROR_LIB_GIT,
+  GAL_ERROR_LIB_INTERPOLATE,
+  GAL_ERROR_LIB_JPEG,
+  GAL_ERROR_LIB_KDTREE,
+  GAL_ERROR_LIB_LABEL,
+  GAL_ERROR_LIB_LIST,
+  GAL_ERROR_LIB_MATCH,
+  GAL_ERROR_LIB_PDF,
+  GAL_ERROR_LIB_PERMUTATION,
+  GAL_ERROR_LIB_POINTER,
+  GAL_ERROR_LIB_POLYGON,
+  GAL_ERROR_LIB_POOL,
+  GAL_ERROR_LIB_PYTHON,
+  GAL_ERROR_LIB_QSORT,
+  GAL_ERROR_LIB_SPECLINES,
+  GAL_ERROR_LIB_STATISTICS,
+  GAL_ERROR_LIB_TABLE,
+  GAL_ERROR_LIB_THREADS,
+  GAL_ERROR_LIB_TIFF,
+  GAL_ERROR_LIB_TILE,
+  GAL_ERROR_LIB_TXT,
+  GAL_ERROR_LIB_TYPE,
+  GAL_ERROR_LIB_UNITS,
+  GAL_ERROR_LIB_WARP,
+  GAL_ERROR_LIB_WCS,
+  /*-----------------------------------------------------------------*/
+
+  GAL_ERROR_LIB_NUMLIBS /* Total number of libraies */
 };
 
 
@@ -178,9 +196,9 @@ uint8_t
 gal_error_check(gal_error_t **err, uint32_t macro_val);
 
 int
-gal_error_func_reject(gal_error_t **err, int lib_code,
-                      int error_code, int is_warning,
-                      const char *func);
+gal_error_exists_leave_func(gal_error_t **err, int lib_code,
+                            int error_code, int is_warning,
+                            const char *func);
 
 void
 gal_error_parse_macro(uint32_t macro_val, uint8_t *lib_code, uint8_t *code,
@@ -198,7 +216,6 @@ gal_error_print(gal_error_t *err);
 
 void
 gal_error_reverse(gal_error_t **err);
-
 
 __END_C_DECLS    /* From C++ preparations */
 

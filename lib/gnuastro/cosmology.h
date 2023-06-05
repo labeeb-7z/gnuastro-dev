@@ -51,13 +51,13 @@ __BEGIN_C_DECLS  /* From C++ preparations */
 /* Error codes for this library. */
 enum gal_array_error
 {
-  GAL_COSMOLOGY_ERROR_INVALID,                  /* =0 by default. */
-  GAL_COSMOLOGY_ERROR_REJECTED,                 /* Unknown situation. */
-  GAL_COSMOLOGY_ERROR_BUG,                      /* Unknown situation. */
-  GAL_COSMOLOGY_ERROR_LAMBDA_OUT_OF_BOUNDS,     /* olambda not in 0 to 1. */
-  GAL_COSMOLOGY_ERROR_MATTER_OUT_OF_BOUNDS,     /* omatter not in 0 to 1. */
-  GAL_COSMOLOGY_ERROR_RADIATION_OUT_OF_BOUNDS,  /* oradiation not in 0 to 1. */
-  GAL_COSMOLOGY_ERROR_SUM_LIMIT,                /* sum of frac-density not 1. */
+  GAL_COSMOLOGY_ERROR_INVALID,                /* =0 by default. */
+  GAL_COSMOLOGY_ERROR_REJECTED,               /* Unknown situation. */
+  GAL_COSMOLOGY_ERROR_BUG,                    /* Unknown situation. */
+  GAL_COSMOLOGY_ERROR_LAMBDA_OUT_OF_BOUNDS,   /* olambda not in 0 to 1. */
+  GAL_COSMOLOGY_ERROR_MATTER_OUT_OF_BOUNDS,   /* omatter not in 0 to 1. */
+  GAL_COSMOLOGY_ERROR_RADIATION_OUT_OF_BOUNDS,/* oradiation not in 0 to 1. */
+  GAL_COSMOLOGY_ERROR_SUM_LIMIT,              /* sum of frac-density not 1. */
 };
 
 

@@ -35,11 +35,11 @@ along with Gnuastro. If not, see <http://www.gnu.org/licenses/>.
 #include <gnuastro/array.h>
 #include <gnuastro/threads.h>
 #include <gnuastro/arithmetic.h>
+#include <gnuastro/errorinprogram.h>
 
 #include <gnuastro-internal/timing.h>
 #include <gnuastro-internal/options.h>
 #include <gnuastro-internal/checkset.h>
-#include <gnuastro-internal/error-internal.h>
 #include <gnuastro-internal/fixedstringmacros.h>
 
 #include "main.h"
@@ -68,23 +68,24 @@ args_doc[] = "ASTRdata or number [ASTRdata] OPERATOR ...";
 
 const char
 doc[] = GAL_STRINGS_TOP_HELP_INFO PROGRAM_NAME" will do arithmetic "
-  "operations on one or multiple images and numbers. Simply put, the name "
-  "of the image along with the arithmetic operators and possible numbers "
-  "are given as arguments. The extensions of each input are specified with "
-  "(possibly multiple) calls to the '--hdu' option."
+  "operations on one or multiple images and numbers. Simply put, the "
+  "name of the image along with the arithmetic operators and possible "
+  "numbers are given as arguments. The extensions of each input are "
+  "specified with (possibly multiple) calls to the '--hdu' option."
   "\n\nCurrently "PROGRAM_NAME" only supports postfix or reverse polish "
   "notation. For example to get the result of '5+6', you should write "
-  "'5 6 +', or to get the average of two images, you should write 'a.fits "
-  "b.fits + 2 /' (or more simply use the 'average' operator with "
+  "'5 6 +', or to get the average of two images, you should write "
+  "'a.fits b.fits + 2 /' (or more simply use the 'average' operator with "
   "'a.fits b.fits average'). Please see the manual for more information. "
-  "\n\n"PROGRAM_NAME" recognizes a large collection of standard operators, "
-  "including basic arithmetic (e.g., +, -, x, /), mathematical (e.g., abs, "
-  "pow, sqrt, log), statistical (minvalue, min, max, average), comparison "
-  "(e.g., lt, le, gt), logical (e.g., and, or, not), the full set of bitwise "
-  "operators, and numeric type conversion operators to all known types. "
-  "Please run the command below for a complete list describing all "
-  "operators (press the 'SPACE' keyboard key, or arrow keys, to go down "
-  "and 'q' to return to the command-line):\n\n"
+  "\n\n"PROGRAM_NAME" recognizes a large collection of standard "
+  "operators, including basic arithmetic (e.g., +, -, x, /), "
+  "mathematical (e.g., abs, pow, sqrt, log), statistical (minvalue, min, "
+  "max, average), comparison (e.g., lt, le, gt), logical (e.g., and, or, "
+  "not), the full set of bitwise operators, and numeric type conversion "
+  "operators to all known types. Please run the command below for a "
+  "complete list describing all operators (press the 'SPACE' keyboard "
+  "key, or arrow keys, to go down and 'q' to return to the "
+  "command-line):\n\n"
   "     $ info gnuastro \"Arithmetic operators\"\n"
   GAL_STRINGS_MORE_HELP_INFO
   /* After the list of options: */
@@ -236,13 +237,13 @@ ui_read_check_only_options(struct arithmeticparams *p)
   if(p->wcsfile && strcmp(p->wcsfile,"none"))
     {
       if(gal_fits_file_recognized(p->wcsfile)==0)
-        error(EXIT_FAILURE, 0, "%s: file given to '--wcsfile' must be in "
-              "FITS format with a recognizable FITS format suffix.",
+        error(EXIT_FAILURE, 0, "%s: file given to '--wcsfile' must be "
+              "in FITS format with a recognizable FITS format suffix",
               p->wcsfile);
       if(p->wcshdu==NULL)
-        error(EXIT_FAILURE, 0, "%s: no HDU/extension specified (file given "
-              "to '--wcsfile')! Please use '--wcshdu' to specify a "
-              "HDU/extension to read from", p->wcsfile);
+        error(EXIT_FAILURE, 0, "%s: no HDU/extension specified (file "
+              "given to '--wcsfile')! Please use '--wcshdu' to specify "
+              "a HDU/extension to read from", p->wcsfile);
     }
 }
 
@@ -263,9 +264,10 @@ ui_check_options_and_arguments(struct arithmeticparams *p)
 
   /* First, make sure that any tokens are actually given. */
   if(p->tokens==NULL)
-    error(EXIT_FAILURE, 0, "no input tokens. Please specify a filename or "
-          "number (as operands) along with operator(s) as input. Please run "
-          "any of the following commands for more information.\n\n"
+    error(EXIT_FAILURE, 0, "no input tokens. Please specify a filename "
+          "or number (as operands) along with operator(s) as input. "
+          "Please run any of the following commands for more "
+          "information.\n\n"
           "    $ astarithmetic --help           # Short info.\n"
           "    $ info astarithmetic             # Full invocation "
           "documentation.\n");
@@ -335,7 +337,7 @@ ui_check_options_and_arguments(struct arithmeticparams *p)
             token->v[0]='-';
 
           /* If an error occurred, abort the program. */
-          errorـinternal_check_abort(err);
+          gal_errorinprogram(err);
         }
     }
 

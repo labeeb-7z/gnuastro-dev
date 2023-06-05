@@ -172,6 +172,7 @@ pkginclude_HEADERS = gnuastro/config.h \
   $(headersdir)/ds9.h \
   $(headersdir)/eps.h \
   $(headersdir)/error.h \
+  $(headersdir)/errorinprogram.h \
   $(headersdir)/fit.h \
   $(headersdir)/fits.h \
   $(headersdir)/git.h \

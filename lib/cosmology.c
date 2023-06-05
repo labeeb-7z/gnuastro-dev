@@ -93,10 +93,11 @@ cosmology_error(gal_error_t **err, int error_code,
 
 
 static int
-cosmology_reject(gal_error_t **err, const char *func)
+cosmology_error_exists_leave(gal_error_t **err, const char *func)
 {
-  return gal_error_func_reject(err, GAL_ERROR_LIB_COSMOLOGY,
-                               GAL_COSMOLOGY_ERROR_REJECTED, 0, func);
+  return gal_error_exists_leave_func(err, GAL_ERROR_LIB_COSMOLOGY,
+                                     GAL_COSMOLOGY_ERROR_REJECTED, 0,
+                                     func);
 }
 
 
@@ -121,14 +122,18 @@ cosmology_reject(gal_error_t **err, const char *func)
 /**************************************************************/
 /************      Constraint Check Function      *************/
 /**************************************************************/
-/* Check if input parameters are witihin the required constraints.
-    i.e All density fractions should be between 0 and 1 AND their
-    sum should not exceed 1. */
-static void
-cosmology_density_check(double o_lambda_0, double o_matter_0,
-                        double o_radiation_0, gal_error_t **err)
+/* Check if input parameters are witihin the required constraints.  i.e All
+   density fractions should be between 0 and 1 AND their sum should not
+   exceed 1. */
+static int
+cosmology_sanity_check(double o_lambda_0, double o_matter_0,
+                       double o_radiation_0, const char *func,
+                       gal_error_t **err)
 {
-  double sum = o_lambda_0 + o_matter_0 + o_radiation_0;
+  double sum;
+
+  /* If there is a prior error, signal a failure (by returning 1). */
+  if(cosmology_error_exists_leave(err, __func__)) return 1;
 
   /* Check if the density fractions are between 0 and 1. */
   if(o_lambda_0 > 1 || o_lambda_0 < 0)
@@ -137,7 +142,7 @@ cosmology_density_check(double o_lambda_0, double o_matter_0,
                     "zero and one (inclusive), but the given value "
                     "is '%.8f'. Recall that 'olambda' is the current "
                     "cosmological constant density per critical "
-                    "density", __func__, o_lambda_0);
+                    "density", func, o_lambda_0);
 
   if(o_matter_0 > 1 || o_matter_0 < 0)
     cosmology_error(err, GAL_COSMOLOGY_ERROR_MATTER_OUT_OF_BOUNDS,
@@ -145,26 +150,30 @@ cosmology_density_check(double o_lambda_0, double o_matter_0,
                     "between zero and one (inclusive), but the "
                     "given value is '%.8f'. Recall that 'omatter' "
                     "is 'Current matter density per critical "
-                    "density.'", __func__, o_matter_0);
+                    "density'",func, o_matter_0);
 
   if(o_radiation_0 > 1 || o_radiation_0 < 0)
     cosmology_error(err, GAL_COSMOLOGY_ERROR_RADIATION_OUT_OF_BOUNDS,
                     0, "%s: value to option 'oradiation' must be "
                     "between zero and one (inclusive), but the given "
                     "value is '%.8f'. Recall that 'oradiation' is "
-                    "'Current radiation density per critical density.",
-                    __func__, o_radiation_0);
+                    "'Current radiation density per critical density",
+                    func, o_radiation_0);
 
   /* Check if the density fractions add up to 1 (within floating point
      error). */
+  sum = o_lambda_0 + o_matter_0 + o_radiation_0;
   if( sum > (1+1e-8) || sum < (1-1e-8) )
     cosmology_error(err, GAL_COSMOLOGY_ERROR_SUM_LIMIT, 0,
                     "%s: sum of fractional densities is not 1, "
                     "but %.8f. The cosmological constant "
                     "('olambda'), matter ('omatter') and radiation "
                     "('oradiation') densities are given as %.8f, "
-                    "%.8f, %.8f.", __func__, sum, o_lambda_0,
+                    "%.8f, %.8f.", func, sum, o_lambda_0,
                     o_matter_0, o_radiation_0);
+
+  /* If a new error was found, signal a failure (by returning 1). */
+  return *err==NULL ? 0 : 1;
 }
 
 
@@ -278,10 +287,9 @@ gal_cosmology_age(double z, double H0, double o_lambda_0,
   struct cosmology_integrand_t p={o_lambda_0, o_curv_0, o_matter_0,
                                   o_radiation_0};
 
-  /* Sanity check. */
-  if(cosmology_reject(err, __func__)) return NAN;
-  cosmology_density_check(o_lambda_0, o_matter_0, o_radiation_0, err);
-  if(*err) return NAN;
+  /* Sanity checks (no errors and good inputs). */
+  if( cosmology_sanity_check(o_lambda_0, o_matter_0, o_radiation_0,
+                             __func__, err) ) return NAN;
 
   /* Set the GSL function parameters. */
   F.params=&p;
@@ -303,7 +311,6 @@ gal_cosmology_proper_distance(double z, double H0, double o_lambda_0,
                               double o_matter_0, double o_radiation_0,
                               gal_error_t **err)
 {
-  cosmology_density_check(o_lambda_0, o_matter_0, o_radiation_0, err);
   size_t neval;
   gsl_function F;
   double result, error, c=GSL_CONST_MKSA_SPEED_OF_LIGHT;
@@ -311,6 +318,10 @@ gal_cosmology_proper_distance(double z, double H0, double o_lambda_0,
   double H0s=H0/1000/GSL_CONST_MKSA_PARSEC;  /* H0 in units of seconds. */
   struct cosmology_integrand_t p={o_lambda_0, o_curv_0, o_matter_0,
                                   o_radiation_0};
+
+  /* Sanity checks (no errors and good inputs). */
+  if( cosmology_sanity_check(o_lambda_0, o_matter_0, o_radiation_0,
+                             __func__, err) ) return NAN;
 
   /* Set the GSL function parameters */
   F.params=&p;
@@ -334,7 +345,6 @@ gal_cosmology_comoving_volume(double z, double H0, double o_lambda_0,
                               double o_matter_0, double o_radiation_0,
                               gal_error_t **err)
 {
-  cosmology_density_check(o_lambda_0, o_matter_0, o_radiation_0, err);
   size_t neval;
   gsl_function F;
   double result, error;
@@ -344,6 +354,10 @@ gal_cosmology_comoving_volume(double z, double H0, double o_lambda_0,
   double o_curv_0 = 1.0 - ( o_lambda_0 + o_matter_0 + o_radiation_0 );
   struct cosmology_integrand_t p={o_lambda_0, o_curv_0, o_matter_0,
                                   o_radiation_0};
+
+  /* Sanity checks (no errors and good inputs). */
+  if( cosmology_sanity_check(o_lambda_0, o_matter_0, o_radiation_0,
+                             __func__, err) ) return NAN;
 
   /* Set the GSL function parameters */
   F.params=&p;
@@ -367,12 +381,15 @@ gal_cosmology_critical_density(double z, double H0, double o_lambda_0,
                                double o_matter_0, double o_radiation_0,
                                gal_error_t **err)
 {
-  cosmology_density_check(o_lambda_0, o_matter_0, o_radiation_0, err);
   double H;
   double H0s=H0/1000/GSL_CONST_MKSA_PARSEC;     /* H0 in units of seconds. */
   double o_curv_0 = 1.0 - ( o_lambda_0 + o_matter_0 + o_radiation_0 );
   struct cosmology_integrand_t p={o_lambda_0, o_curv_0, o_matter_0,
                                   o_radiation_0};
+
+  /* Sanity checks (no errors and good inputs). */
+  if( cosmology_sanity_check(o_lambda_0, o_matter_0, o_radiation_0,
+                             __func__, err) ) return NAN;
 
   /* Set the place holder, then return the result. */
   H = H0s * cosmology_integrand_Ez(z, &p);
@@ -389,7 +406,11 @@ gal_cosmology_angular_distance(double z, double H0, double o_lambda_0,
                                double o_matter_0, double o_radiation_0,
                                gal_error_t **err)
 {
-  cosmology_density_check(o_lambda_0, o_matter_0, o_radiation_0, err);
+  /* Sanity checks (no errors and good inputs). */
+  if( cosmology_sanity_check(o_lambda_0, o_matter_0, o_radiation_0,
+                             __func__, err) ) return NAN;
+
+  /* Do the calculation. */
   return gal_cosmology_proper_distance(z, H0, o_lambda_0, o_matter_0,
                                        o_radiation_0, err) / (1+z);
 }
@@ -404,7 +425,11 @@ gal_cosmology_luminosity_distance(double z, double H0, double o_lambda_0,
                                   double o_matter_0, double o_radiation_0,
                                   gal_error_t **err)
 {
-  cosmology_density_check(o_lambda_0, o_matter_0, o_radiation_0, err);
+  /* Sanity checks (no errors and good inputs). */
+  if( cosmology_sanity_check(o_lambda_0, o_matter_0, o_radiation_0,
+                             __func__, err) ) return NAN;
+
+  /* Do the calculation. */
   return gal_cosmology_proper_distance(z, H0, o_lambda_0, o_matter_0,
                                        o_radiation_0, err) * (1+z);
 }
@@ -419,7 +444,11 @@ gal_cosmology_distance_modulus(double z, double H0, double o_lambda_0,
                                double o_matter_0, double o_radiation_0,
                                gal_error_t **err)
 {
-  cosmology_density_check(o_lambda_0, o_matter_0, o_radiation_0, err);
+  /* Sanity checks (no errors and good inputs). */
+  if( cosmology_sanity_check(o_lambda_0, o_matter_0, o_radiation_0,
+                             __func__, err) ) return NAN;
+
+  /* Do the calculation. */
   double ld=gal_cosmology_luminosity_distance(z, H0, o_lambda_0, o_matter_0,
                                               o_radiation_0, err);
   return 5*(log10(ld*1000000)-1);
@@ -435,7 +464,11 @@ gal_cosmology_to_absolute_mag(double z, double H0, double o_lambda_0,
                               double o_matter_0, double o_radiation_0,
                               gal_error_t **err)
 {
-  cosmology_density_check(o_lambda_0, o_matter_0, o_radiation_0, err);
+  /* Sanity checks (no errors and good inputs). */
+  if( cosmology_sanity_check(o_lambda_0, o_matter_0, o_radiation_0,
+                             __func__, err) ) return NAN;
+
+  /* Do the calculation. */
   double dm=gal_cosmology_distance_modulus(z, H0, o_lambda_0, o_matter_0,
                                            o_radiation_0, err);
   return dm-2.5*log10(1.0+z);

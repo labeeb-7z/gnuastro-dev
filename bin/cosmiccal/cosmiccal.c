@@ -29,8 +29,7 @@ along with Gnuastro. If not, see <http://www.gnu.org/licenses/>.
 #include <stdlib.h>
 
 #include <gnuastro/cosmology.h>
-
-#include <gnuastro-internal/error-internal.h>
+#include <gnuastro/errorinprogram.h>
 
 #include "main.h"
 
@@ -165,16 +164,12 @@ cosmiccal(struct cosmiccalparams *p)
   double curage, zage;
   gal_error_t *err = NULL;
 
-  /* If no redshift is given, just print the input parameters along with a
-     notice that further calculations are only possible with a redshift and
-     abort. */
+  /* If no redshift is given, it is a bug that should be fixed by us (the
+     developers). */
   if(isnan(p->redshift))
-    {
-      cosmiccal_print_input(p);
-      printf("\n\nPlease specify a redshift with the '--redshift' (or '-z') "
-             "option.\n");
-      return;
-    }
+    error(EXIT_FAILURE, 0, "%s: a bug! Please contact us at '%s' to fix "
+          "the problem. The value of 'redshift' should not be NaN at "
+          "this point", __func__, PACKAGE_BUGREPORT);
 
   /* In case the user just wants one number, only print that and
      return. */
@@ -191,32 +186,34 @@ cosmiccal(struct cosmiccalparams *p)
 
             case UI_KEY_AGENOW:
               printf("%f", gal_cosmology_age(0.0f, p->H0, p->olambda,
-                                              p->omatter, p->oradiation,
-                                              &err));
+                                             p->omatter, p->oradiation,
+                                             &err));
               break;
 
             case UI_KEY_CRITICALDENSITYNOW:
               printf("%e", gal_cosmology_critical_density(0.0f, p->H0,
-                                                           p->olambda,
-                                                           p->omatter,
-                                                           p->oradiation,
-                                                           &err));
-              break;
-
-            case UI_KEY_PROPERDISTANCE:
-              printf("%f", gal_cosmology_proper_distance(p->redshift, p->H0,
                                                           p->olambda,
                                                           p->omatter,
                                                           p->oradiation,
                                                           &err));
               break;
 
+            case UI_KEY_PROPERDISTANCE:
+              printf("%f", gal_cosmology_proper_distance(p->redshift,
+                                                         p->H0,
+                                                         p->olambda,
+                                                         p->omatter,
+                                                         p->oradiation,
+                                                         &err));
+              break;
+
             case UI_KEY_ANGULARDIMDIST:
-              printf("%f", gal_cosmology_angular_distance(p->redshift, p->H0,
-                                                           p->olambda,
-                                                           p->omatter,
-                                                           p->oradiation,
-                                                           &err));
+              printf("%f", gal_cosmology_angular_distance(p->redshift,
+                                                          p->H0,
+                                                          p->olambda,
+                                                          p->omatter,
+                                                          p->oradiation,
+                                                          &err));
               break;
 
             case UI_KEY_ARCSECTANDIST:
@@ -239,19 +236,21 @@ cosmiccal(struct cosmiccalparams *p)
               break;
 
             case UI_KEY_DISTANCEMODULUS:
-              printf("%f", gal_cosmology_distance_modulus(p->redshift, p->H0,
-                                                           p->olambda,
-                                                           p->omatter,
-                                                           p->oradiation,
-                                                           &err));
-              break;
-
-            case UI_KEY_ABSMAGCONV:
-              printf("%f", gal_cosmology_to_absolute_mag(p->redshift, p->H0,
+              printf("%f", gal_cosmology_distance_modulus(p->redshift,
+                                                          p->H0,
                                                           p->olambda,
                                                           p->omatter,
                                                           p->oradiation,
                                                           &err));
+              break;
+
+            case UI_KEY_ABSMAGCONV:
+              printf("%f", gal_cosmology_to_absolute_mag(p->redshift,
+                                                         p->H0,
+                                                         p->olambda,
+                                                         p->omatter,
+                                                         p->oradiation,
+                                                         &err));
               break;
 
             case UI_KEY_AGE:
@@ -270,19 +269,20 @@ cosmiccal(struct cosmiccalparams *p)
               break;
 
             case UI_KEY_CRITICALDENSITY:
-              printf("%e", gal_cosmology_critical_density(p->redshift, p->H0,
-                                                           p->olambda,
-                                                           p->omatter,
-                                                           p->oradiation,
-                                                           &err));
-              break;
-
-            case UI_KEY_VOLUME:
-              printf("%f", gal_cosmology_comoving_volume(p->redshift, p->H0,
+              printf("%e", gal_cosmology_critical_density(p->redshift,
+                                                          p->H0,
                                                           p->olambda,
                                                           p->omatter,
                                                           p->oradiation,
                                                           &err));
+              break;
+
+            case UI_KEY_VOLUME:
+              printf("%f", gal_cosmology_comoving_volume(p->redshift, p->H0,
+                                                         p->olambda,
+                                                         p->omatter,
+                                                         p->oradiation,
+                                                         &err));
               break;
 
             case UI_KEY_USEDVELOCITY:
@@ -295,23 +295,24 @@ cosmiccal(struct cosmiccalparams *p)
               break;
 
             default:
-              error(EXIT_FAILURE, 0, "%s: a bug! Please contact us at %s to "
-                    "fix the problem. The code %d is not recognized as a "
-                    "single value calculation code", __func__,
+              error(EXIT_FAILURE, 0, "%s: a bug! Please contact us at %s "
+                    "to fix the problem. The code %d is not recognized "
+                    "as a single value calculation code", __func__,
                     PACKAGE_BUGREPORT, tmp->v);
             }
 
           /* Incase an error passed through the ui sanity checks. */
-          if(gal_error_occurred(err))
-            errorـinternal_check_abort(err);
-          /*
+          gal_errorinprogram(err);
+
+          /* OLD CODE
             error(EXIT_FAILURE, 0, "%s: a bug! Please contact us at %s to "
                   "fix the problem. The values provided for the "
                   "cosmological constants (%f, %f, %f) don't satisfy "
                   "their constraints.", __func__, PACKAGE_BUGREPORT,
                   p->olambda, p->omatter, p->oradiation);
           */
-          /* Only add a space-character if there are more results to print. */
+
+          /* Add a space-character if there are more results to print. */
           if(tmp->next) printf(" ");
         }
 
