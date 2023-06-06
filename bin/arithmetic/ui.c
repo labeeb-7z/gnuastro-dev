@@ -337,7 +337,7 @@ ui_check_options_and_arguments(struct arithmeticparams *p)
             token->v[0]='-';
 
           /* If an error occurred, abort the program. */
-          gal_errorinprogram(err);
+          gal_errorinprogram(err, cp->verboseerrors);
         }
     }
 

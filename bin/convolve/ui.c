@@ -458,7 +458,7 @@ ui_read_input(struct convolveparams *p)
       }
 
   /* If an error occurred, abort the program. */
-  gal_errorinprogram(err);
+  gal_errorinprogram(err, p->cp.verboseerrors);
 
   /* The input isn't an image (wasn't read yet), so we'll read it as a
      column. */
@@ -494,7 +494,7 @@ ui_read_kernel(struct convolveparams *p)
     p->kernel=ui_read_column(p, 1);
 
   /* If an error occurred abort the program. */
-  gal_errorinprogram(err);
+  gal_errorinprogram(err, p->cp.verboseerrors);
 
   /* Make sure that the kernel and input have the same number of
      dimensions. */

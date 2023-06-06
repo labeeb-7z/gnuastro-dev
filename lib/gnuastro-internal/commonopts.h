@@ -390,6 +390,19 @@ struct argp_option gal_commonopts_options[] =
       GAL_OPTIONS_NOT_MANDATORY,
       GAL_OPTIONS_NOT_SET
     },
+    {
+      "verbose-errors",
+      GAL_OPTIONS_KEY_VERBOSEERRORS,
+      0,
+      0,
+      "Detailed error messages (in library functions).",
+      GAL_OPTIONS_GROUP_OPERATING_MODE,
+      &cp->verboseerrors,
+      GAL_OPTIONS_NO_ARG_TYPE,
+      GAL_OPTIONS_RANGE_0_OR_1,
+      GAL_OPTIONS_NOT_MANDATORY,
+      GAL_OPTIONS_NOT_SET
+    },
 
 
 

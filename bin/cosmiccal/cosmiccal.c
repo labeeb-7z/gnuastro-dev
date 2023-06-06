@@ -301,17 +301,6 @@ cosmiccal(struct cosmiccalparams *p)
                     PACKAGE_BUGREPORT, tmp->v);
             }
 
-          /* Incase an error passed through the ui sanity checks. */
-          gal_errorinprogram(err);
-
-          /* OLD CODE
-            error(EXIT_FAILURE, 0, "%s: a bug! Please contact us at %s to "
-                  "fix the problem. The values provided for the "
-                  "cosmological constants (%f, %f, %f) don't satisfy "
-                  "their constraints.", __func__, PACKAGE_BUGREPORT,
-                  p->olambda, p->omatter, p->oradiation);
-          */
-
           /* Add a space-character if there are more results to print. */
           if(tmp->next) printf(" ");
         }
@@ -322,12 +311,15 @@ cosmiccal(struct cosmiccalparams *p)
   else
     cosmiccal_printall(p);
 
+  /* Incase any error occurred. */
+  gal_errorinprogram(err, p->cp.verboseerrors);
+
   /* Print a warning if the redshift is too close for the hubble flow to be
      significant. This is done at the end because it is important and may
      be missed at the start of the program (before the outputs are
      printed). */
   if(p->redshift<MAIN_REDSHIFT_SIG_HUBBLE_FLOW && p->cp.quiet==0)
-    error(EXIT_SUCCESS, 0, "WARNING: at very low redshifts "
+    error(EXIT_SUCCESS, 0, "[WARNING] at very low redshifts "
           "(approximately below %g), the peculiar velocity of the "
           "particular galaxy may be more significant than hubble's "
           "law (which is the basis of the measurements here). This "

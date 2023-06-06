@@ -109,25 +109,26 @@ enum options_common_keys
   GAL_OPTIONS_KEY_REMAINDERFRAC = 'F',
 
   /* Only long option (integers for keywords). */
-  GAL_OPTIONS_KEY_STDINTIMEOUT = 500,
-  GAL_OPTIONS_KEY_MINMAPSIZE,
-  GAL_OPTIONS_KEY_QUIETMMAP,
-  GAL_OPTIONS_KEY_LOG,
+  GAL_OPTIONS_KEY_LOG = 500,
   GAL_OPTIONS_KEY_CITE,
   GAL_OPTIONS_KEY_CONFIG,
   GAL_OPTIONS_KEY_SEARCHIN,
+  GAL_OPTIONS_KEY_QUIETMMAP,
+  GAL_OPTIONS_KEY_MINMAPSIZE,
   GAL_OPTIONS_KEY_LASTCONFIG,
-  GAL_OPTIONS_KEY_CHECKCONFIG,
-  GAL_OPTIONS_KEY_CONFIGPREFIX,
-  GAL_OPTIONS_KEY_TABLEFORMAT,
-  GAL_OPTIONS_KEY_ONLYVERSION,
   GAL_OPTIONS_KEY_WORKOVERCH,
   GAL_OPTIONS_KEY_CHECKTILES,
-  GAL_OPTIONS_KEY_ONEELEMPERTILE,
-  GAL_OPTIONS_KEY_INTERPONLYBLANK,
+  GAL_OPTIONS_KEY_CHECKCONFIG,
+  GAL_OPTIONS_KEY_TABLEFORMAT,
+  GAL_OPTIONS_KEY_ONLYVERSION,
+  GAL_OPTIONS_KEY_CONFIGPREFIX,
+  GAL_OPTIONS_KEY_STDINTIMEOUT,
   GAL_OPTIONS_KEY_INTERPMETRIC,
   GAL_OPTIONS_KEY_INTERPNUMNGB,
+  GAL_OPTIONS_KEY_VERBOSEERRORS,
+  GAL_OPTIONS_KEY_ONEELEMPERTILE,
   GAL_OPTIONS_KEY_WCSLINEARMATRIX,
+  GAL_OPTIONS_KEY_INTERPONLYBLANK,
 };
 
 
@@ -209,6 +210,7 @@ struct gal_options_common_params
   uint8_t            quietmmap; /* ==0: print mmap'd file name and size.  */
   uint8_t                  log; /* Make a log file.                       */
   char            *onlyversion; /* Redundant, kept/set for generality.    */
+  uint8_t        verboseerrors; /* More detailed error message.           */
 
   /* Configuration files. */
   uint8_t          printparams; /* To print the full list of parameters.  */

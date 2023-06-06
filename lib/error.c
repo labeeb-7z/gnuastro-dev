@@ -97,8 +97,36 @@ gal_error_print_lib_name(int lib_code)
 
 
 
+
+char *
+gal_error_to_string(gal_error_t *err, int verbose)
+{
+  char *out, *stat=NULL;
+
+  /* If an error is found which is NOT a warning. */
+  if(err->is_warning==0) stat="[BREAKING]";
+  else                   stat="[WARNING]";
+
+  /* Print the message. */
+  if(err->front_msg)
+    asprintf(&out, "%s: %s: %d: %s %s", err->front_msg,
+             gal_error_print_lib_name(err->lib_code),
+             err->code, err->back_msg, stat);
+  else
+    asprintf(&out, "%s: %d: %s %s",
+             gal_error_print_lib_name(err->lib_code),
+             err->code, err->back_msg, stat);
+
+  /* Return the final string. */
+  return out;
+}
+
+
+
+
+
 /* Prints all the error messages in the given structure in the following
-   format:
+   format for verbose mode (when 'verbose!=0')
 
      Frontend msg: code: Backend msg: [BREAKING]
 
@@ -106,10 +134,10 @@ gal_error_print_lib_name(int lib_code)
    an int denoting if number of breaking errors is more than 1, thus giving
    the user the option to EXIT_FAILURE themselves. */
 int
-gal_error_print(gal_error_t *err)
+gal_error_to_stderr_all(gal_error_t *err, int verbose)
 {
-  char *brkstr="";
-  uint8_t count_err = 0;
+  char *errstr;
+  int ncritical=0;
   gal_error_t *tmperr = NULL;
 
   /* If error structure is empty, everything is fine (there was no error to
@@ -119,24 +147,14 @@ gal_error_print(gal_error_t *err)
   /* Go over each component and print the message. */
   for(tmperr = err; tmperr!=NULL; tmperr = tmperr->next)
     {
-      /* If an error is found which is NOT a warning. */
-      if(!tmperr->is_warning)
-      {
-        count_err++;
-        brkstr="[BREAKING]";
-      }
-
-      if(tmperr->front_msg)
-        error(EXIT_SUCCESS, 0,
-              "%s: %s: %d: %s %s",tmperr->front_msg,
-              gal_error_print_lib_name(tmperr->lib_code),
-              tmperr->code, tmperr->back_msg, brkstr);
-      else
-        error(EXIT_SUCCESS, 0,
-              "%s: %d: %s %s", gal_error_print_lib_name(tmperr->lib_code),
-              tmperr->code, tmperr->back_msg, brkstr);
+      if(err->is_warning==0) ncritical++;
+      errstr=gal_error_to_string(tmperr, verbose);
+      error(EXIT_SUCCESS, 0, errstr);
+      free(errstr);
     }
-  return count_err;
+
+  /* Return the number of critical errors. */
+  return ncritical;
 }
 
 

@@ -93,6 +93,7 @@ typedef struct gal_error_t
 {
   uint8_t code;              /* Code of the problem wrt to each library.*/
   uint8_t lib_code;          /* Library which created the error.        */
+  uint8_t type;              /* Type... */
   uint8_t is_warning;        /* Defines if the error is only a warning. */
   char *back_msg;            /* Detailed message of backend (library)   */
   char *front_msg;           /* Detailed message of front end (caller). */
@@ -188,6 +189,8 @@ void
 gal_error(gal_error_t **err, int lib_code, int error_code,
           int is_warning, char *format, ...);
 
+void
+gal_error_reverse(gal_error_t **err);
 
 /****************************************************************
  *************************   Checking   *************************
@@ -211,11 +214,11 @@ gal_error_occurred(gal_error_t *err);
 /****************************************************************
  *************************   Priting   **************************
  ****************************************************************/
-int
-gal_error_print(gal_error_t *err);
+char *
+gal_error_to_string(gal_error_t *err, int verbose);
 
-void
-gal_error_reverse(gal_error_t **err);
+int
+gal_error_to_stderr_all(gal_error_t *err, int verbose);
 
 __END_C_DECLS    /* From C++ preparations */
 

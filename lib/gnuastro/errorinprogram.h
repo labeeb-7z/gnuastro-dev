@@ -53,9 +53,9 @@ along with Gnuastro. If not, see <http://www.gnu.org/licenses/>.
    function's full definition is in this header file and the user'sSo it is
    loaded into each source file that needs it separately. */
 void
-gal_errorinprogram(gal_error_t *error)
+gal_errorinprogram(gal_error_t *error, int verbose)
 {
-  if(gal_error_print(error))
+  if(gal_error_to_stderr_all(error, verbose))
     exit(EXIT_FAILURE);
 }
 
