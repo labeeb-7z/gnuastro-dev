@@ -169,6 +169,101 @@ enum gal_error_library_codes{
 
 
 
+/*****************************************************************
+ **************        Python Error Types          ***************
+ *****************************************************************/
+/* Classifies each  of the libary  errors into one of the following
+   Python error types. This is used to decide which Python exception
+   to raise when an error occurs in the Python interface of Gnuastro. */
+
+
+
+/* Inspired from https://docs.python.org/3/library/exceptions.html */
+
+enum gal_error_python_types{
+
+    /* Raised when an assert() statement fails. */
+    GAL_ERROR_PYTHON_ASSERTION,
+
+    /* Raised when accessing or modifying an attribute of an object that does not exist. */
+    GAL_ERROR_PYTHON_ATTRIBUTE,
+
+    /* Raised when an operation would block on an object set for non-blocking operation. */
+    GAL_ERROR_PYTHON_BLOCKINGIO,
+
+    /* Raised when trying to write on a pipe while the other end has been closed. */
+    GAL_ERROR_BROKENPIPE,
+
+    /* Raised when trying to create a file or directory which already exists. */
+    GAL_ERROR_PYTHON_FILEEXISTS,
+
+    /* Raised when a file or directory is requested but doesn’t exist. */
+    GAL_ERROR_PYTHON_FILENOTFOUND,
+
+    /* Raised when a system call is interrupted by an incoming signal. */
+    GAL_ERROR_PYTHON_INTERRUPTED,
+
+    /* Raised when the input() function hits an end-of-file condition (EOF) without reading any data. */
+    GAL_ERROR_PYTHON_EOF,
+
+    /* Raised when a file operation is requested on a directory. */
+    GAL_ERROR_PYTHON_ISADIRECTORY,
+
+    /* Raised when the import statement has troubles trying to load a module. */
+    GAL_ERROR_PYTHON_IMPORT,
+
+    /* Raised when a sequence subscript is out of range. */
+    GAL_ERROR_PYTHON_INDEX,
+
+    /* Raised when a key is not found in a dictionary. */
+    GAL_ERROR_PYTHON_KEY,
+
+    /* Raised when the keyboard is interrupted (for example Ctrl+C). */
+    GAL_ERROR_PYTHON_KEYBOARD,
+
+    /* Raised when an operation runs out of memory but the situation may still be rescued. */
+    GAL_ERROR_PYTHON_MEMORY,
+
+    /* Raised when a local or global name is not found. */
+    GAL_ERROR_PYTHON_NAME,
+
+    /* Raised when the result of an arithmetic operation is too large to be represented. */
+    GAL_ERROR_PYTHON_OVERFLOW,
+
+    /* Raised when trying to run an operation without the adequate access rights. */
+    GAL_ERROR_PYTHON_PERMISSION,
+
+    /* Raised when the interpreter detects that the maximum recursion depth. */
+    GAL_ERROR_PYTHON_RECURSION,
+
+    /* Raised when an error is detected that doesn’t fall in any of the other categories. */
+    GAL_ERROR_PYTHON_RUNTIME,
+
+    /* Raised when the program exits. */
+    GAL_ERROR_PYTHON_SYSTEMEXIT,
+
+    /* Raised when a system function timed out at the system level. */
+    GAL_ERROR_PYTHON_TIMEOUT,
+
+    /*  Raised when the type of a built-in operation or function is invalid for the given arguments. */
+    GAL_ERROR_PYTHON_TYPE,
+
+    /* Raised when a built-in operation or function receives an argument that has the right type but an inappropriate value. */
+    GAL_ERROR_PYTHON_VALUE,
+
+    /* Raised when a division or modulo by zero is performed for all numeric types. */
+    GAL_ERROR_PYTHON_ZERODIVISION,
+
+    /* Raised when the Library error does not correspond to any of the error types in Python.  */
+    GAL_ERROR_PYTHON_UNKNOWN,
+
+
+    GAL_ERROR_PYTHON_NTYPES
+};
+
+
+
+
 
 /****************************************************************
  ************************   Allocation   ************************
